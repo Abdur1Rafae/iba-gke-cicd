@@ -2,13 +2,13 @@ pipeline {
     agent any
     
     environment {
-        MONGODB_URI = '' // Define the environment variable to hold MongoDB URI
+        MONGODB_URI = ''
     }
     
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/Abdur1Rafae/iba-gke-cicd'
+                git credentialsId: 'gitcred', url: 'https://github.com/Abdur1Rafae/iba-gke-cicd'
             }
         }
         stage('Set MongoDB URI') {
