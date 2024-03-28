@@ -6,11 +6,6 @@ pipeline {
     }
     
     stages {
-        stage('Checkout') {
-            steps {
-                git credentialsId: 'gitcred', url: 'https://github.com/Abdur1Rafae/iba-gke-cicd'
-            }
-        }
         stage('Set MongoDB URI') {
             steps {
                 withCredentials([string(credentialsId: 'MONGODB_URI', variable: 'MONGODB_URI')]) {
