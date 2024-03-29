@@ -48,8 +48,8 @@ pipeline {
             }
         }
         stage('Deploy to Minikube') {
-            kubeconfig(credentialsId: 'k8cred', serverUrl: '') {
-                steps {
+            steps {
+                kubeconfig(credentialsId: 'k8cred', serverUrl: '') {
                     sh 'kubectl apply -f k8/'
                 }
             }
