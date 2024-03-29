@@ -1,10 +1,10 @@
 pipeline {
     agent any
 
-    // tools {
-    //     nodejs "node"
-    //     dockerTool "docker"
-    // }
+    tools {
+        nodejs "node"
+        dockerTool "docker"
+    }
     
     environment {
         MONGODB_URI = ''
@@ -24,27 +24,29 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'npm install'
+                dir('./application/app') {
+                    sh 'npm install'
+                }
             }
         }
-        // stage('Build Docker Image') {
-        //     steps {
-        //         script {
-        //             docker.build("${DOCKER_HUB_REPO}:${DOCKER_TAG}", './application')
-        //         }
-        //     }
-        // }
-        // stage('Push Docker Image to Docker Hub') {
-        //     steps {
-        //         script {
-        //             withCredentials([usernamePassword(credentialsId: 'dockercred', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-        //                 docker.withRegistry('https://index.docker.io/v1/', 'dockercred') {
-        //                     docker.image("${DOCKER_HUB_REPO}:${DOCKER_TAG}").push()
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build("${DOCKER_HUB_REPO}:${DOCKER_TAG}", './application')
+                }
+            }
+        }
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'dockercred', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        docker.withRegistry('https://index.docker.io/v1/', 'dockercred') {
+                            docker.image("${DOCKER_HUB_REPO}:${DOCKER_TAG}").push()
+                        }
+                    }
+                }
+            }
+        }
         // stage('Deploy to Minikube') {
         //     steps {
         //         kubeconfig(credentialsId: 'k8cred', serverUrl: '') {
