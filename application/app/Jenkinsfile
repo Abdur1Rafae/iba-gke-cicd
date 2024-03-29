@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs "node"
+        dockerTool "docker"
+    }
+
     environment {
         MONGODB_URI = ''
         DOCKER_HUB_REPO = 'abdurrafae/todoapp'
