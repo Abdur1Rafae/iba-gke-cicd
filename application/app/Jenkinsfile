@@ -4,7 +4,6 @@ pipeline {
     tools {
         nodejs "node"
         dockerTool "docker"
-        kubernetesCli 'kubectl'
     }
     
     environment {
@@ -48,12 +47,9 @@ pipeline {
                 }
             }
         }
-        stages {
-            stage('Deploy to Minikube') {
-                steps {
-                    tool name: 'kubectl', type: 'kubectl', installation: 'kubectl'
-                    sh 'kubectl apply -f k8/'
-                }
+        stage('Deploy to Minikube') {
+            steps {
+                sh 'kubectl apply -f k8/'
             }
         }
     }
