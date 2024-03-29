@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs "node"
-        dockerTool "docker"
-    }
-    
     environment {
         MONGODB_URI = ''
         DOCKER_HUB_REPO = 'abdurrafae/todoapp'
@@ -25,34 +20,29 @@ pipeline {
         stage('Build') {
             steps {
                 dir('./application/app') {
-                    sh 'npm install'
+                    script {
+                        sh 'npm install'
+                    }
                 }
             }
         }
         stage('Build Docker Image') {
             steps {
-                dir('./application') {
-                    sh 'docker build -t $DOCKER_HUB_REPO:$DOCKER_TAG .'
+                script {
+                    docker.build("${DOCKER_HUB_REPO}:${DOCKER_TAG}", './application')
                 }
-            }
-        }
-        stage('Tag Docker Image') {
-            steps {
-                sh "docker tag $DOCKER_HUB_REPO:$DOCKER_TAG $DOCKER_HUB_REPO:$DOCKER_TAG"
             }
         }
         stage('Push Docker Image to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockercred', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
-                    sh "docker push $DOCKER_HUB_REPO:$DOCKER_TAG"
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'dockercred', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        docker.withRegistry('https://index.docker.io/v1/', 'docker-credentials') {
+                            docker.image("${DOCKER_HUB_REPO}:${DOCKER_TAG}").push()
+                        }
+                    }
                 }
             }
         }
-        // stage('Deploy to Minikube') {
-        //     steps {
-        //         sh 'kubectl apply -f k8/'
-        //     }
-        // }
     }
 }
