@@ -21,7 +21,9 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'npm install'
+                dir('.') {
+                    sh 'npm install'
+                }
             }
         }
         // stage('Deploy to Minikube') {
