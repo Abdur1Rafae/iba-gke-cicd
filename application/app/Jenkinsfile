@@ -24,9 +24,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                dir('./application/app') {
-                    sh 'npm install'
-                }
+                sh 'npm install'
             }
         }
         stage('Build Docker Image') {
