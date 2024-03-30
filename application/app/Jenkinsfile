@@ -10,6 +10,8 @@ pipeline {
         MONGODB_URI = ''
         DOCKER_HUB_REPO = 'abdurrafae/todoapp'
         DOCKER_TAG = 'latest'
+        K8S_CREDENTIALS_ID = 'k8secret'
+        K8S_SERVER_URL = 'https://127.0.0.1:61399'
     }
     
     stages {
@@ -53,16 +55,9 @@ pipeline {
         }
         stage('Deploy to Minikube') {
             steps {
-                 script {
-                    kubeApply(
-                        kubeconfigId: 'k8secret',
-                        yaml: '/k8',
-                        namespace: env.jenkins
-                    )
-
-                    withCredentials([string(credentialsId: 'k8secretyaml', variable: 'SECRET')]) {
-                        writeFile file: 'app-secret.yaml', text: SECRET
-                        bat 'kubectl apply -f app-secret.yaml'
+                script {
+                    kubeconfig(credentialsId: "${env.K8S_CREDENTIALS_ID}", serverUrl: "${env.K8S_SERVER_URL}") {
+                        bat 'kubectl apply -f k8/web-application.yaml'
                     }
                 }
             }
