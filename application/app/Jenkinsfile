@@ -51,12 +51,21 @@ pipeline {
                 }
             }
         }
-        // stage('Deploy to Minikube') {
-        //     steps {
-        //         kubeconfig(credentialsId: 'k8cred', serverUrl: '') {
-        //             sh 'kubectl apply -f k8/'
-        //         }
-        //     }
-        // }
+        stage('Deploy to Minikube') {
+            steps {
+                 script {
+                    kubeApply(
+                        kubeconfigId: 'k8secret',
+                        yaml: '/k8',
+                        namespace: env.jenkins
+                    )
+
+                    withCredentials([string(credentialsId: 'k8secretyaml', variable: 'SECRET')]) {
+                        writeFile file: 'app-secret.yaml', text: SECRET
+                        bat 'kubectl apply -f app-secret.yaml'
+                    }
+                }
+            }
+        }
     }
 }
