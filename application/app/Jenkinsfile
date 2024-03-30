@@ -12,6 +12,7 @@ pipeline {
         DOCKER_TAG = 'latest'
         K8S_CREDENTIALS_ID = 'k8secret'
         K8S_SERVER_URL = 'https://127.0.0.1:61399'
+        SECRET_DATA = credentials('k8secretyaml') 
     }
     
     stages {
@@ -27,9 +28,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Change to the directory containing package.json
                     dir('./application/app') {
-                        // Use 'npm.cmd' on Windows
                         bat 'npm install'
                     }
                 }
@@ -50,6 +49,13 @@ pipeline {
                             docker.image("${DOCKER_HUB_REPO}:${DOCKER_TAG}").push()
                         }
                     }
+                }
+            }
+        }
+        stage('Apply Secret File') {
+            steps {
+                script {
+                    writeFile file: "app-secret.yaml", text: SECRET_DATA
                 }
             }
         }
