@@ -28,7 +28,7 @@ pipeline {
                     // Change to the directory containing package.json
                     dir('./application/app') {
                         // Use 'npm.cmd' on Windows
-                        bat '"npm.cmd" install'
+                        bat 'npm install'
                     }
                 }
             }
