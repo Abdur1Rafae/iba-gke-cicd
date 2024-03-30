@@ -55,7 +55,18 @@ pipeline {
         stage('Apply Secret File') {
             steps {
                 script {
-                    writeFile file: "app-secret.yaml", text: SECRET_DATA
+                    script {
+                        writeFile file: 'app-secret.yaml', text: """
+                            apiVersion: v1
+                            kind: Secret
+                            metadata:
+                                name: app-secret
+                                namespace: jenkins
+                                type: Opaque
+                            data:
+                                MONGODB_URI: ${MONGODB_URI.encodeBase64()}
+                        """
+                    }
                     bat 'kubectl apply -f app-secret.yaml'
                 }
             }
