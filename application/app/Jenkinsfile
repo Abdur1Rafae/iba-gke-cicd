@@ -24,6 +24,15 @@ pipeline {
                 }
             }
         }
+        stage('Login to Docker Hub') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'dockercred', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        docker.login(credentialsId: 'dockercred')
+                    }
+                }
+            }
+        }
         stage('Build') {
             steps {
                 script {
@@ -43,10 +52,8 @@ pipeline {
         stage('Push Docker Image to Docker Hub') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'dockercred', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        docker.withRegistry('https://index.docker.io/v1/', 'dockercred') {
-                            docker.image("${DOCKER_HUB_REPO}:${DOCKER_TAG}").push()
-                        }
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockercred') {
+                        docker.image("${DOCKER_HUB_REPO}:${DOCKER_TAG}").push()
                     }
                 }
             }
