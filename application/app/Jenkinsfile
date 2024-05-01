@@ -11,7 +11,7 @@ pipeline {
         DOCKER_HUB_REPO = 'abdurrafae/todoapp'
         DOCKER_TAG = 'latest'
         K8S_CREDENTIALS_ID = 'k8secret'
-        K8S_SERVER_URL = 'https://127.0.0.1:61399'
+        K8S_SERVER_URL = 'https://127.0.0.1:57431'
     }
     
     stages {
